@@ -41,25 +41,31 @@ class _SearchScreenState extends State<SearchScreen> {
         var cubit = AppCubit.get(context);
         var bookData = cubit.bookDataModel;
 
-        return Scaffold(
-          appBar: AppBar(
-            leading: IconButton(
-              onPressed: () {
-                if(cubit.bookDataModel == null) {
-                  cubit.getBooks(context);
-                }
-                Navigator.pop(context);
-              },
-              icon: const Icon(
-                Icons.arrow_back_ios_new_outlined,
+        return WillPopScope(
+          onWillPop: () async {
+            cubit.getBooks(context);
+            return true;
+          },
+          child: Scaffold(
+            appBar: AppBar(
+              leading: IconButton(
+                onPressed: () {
+                  if(cubit.bookDataModel == null) {
+                    cubit.getBooks(context);
+                  }
+                  Navigator.pop(context);
+                },
+                icon: const Icon(
+                  Icons.arrow_back_ios_new_outlined,
+                ),
+                tooltip: 'Back',
               ),
-              tooltip: 'Back',
+              title: const Text(
+                'Search Book',
+              ),
             ),
-            title: const Text(
-              'Search Book',
-            ),
+            body: searchBody(bookData),
           ),
-          body: searchBody(bookData),
         );
       },
     );

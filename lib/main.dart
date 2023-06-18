@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => AppCubit()..checkConnection(),),
+        BlocProvider(create: (context) => AppCubit()..checkConnection(context),),
       ],
       child: OverlaySupport.global(
         child: MaterialApp(

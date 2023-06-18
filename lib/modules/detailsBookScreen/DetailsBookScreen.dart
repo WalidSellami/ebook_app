@@ -41,59 +41,77 @@ class DetailsBookScreen extends StatelessWidget {
           body: cubit.hasInternet
               ? detailsBookBody(booksData, context)
               : const Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'No Internet',
-                        style: TextStyle(
-                          fontSize: 19.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(
-                        width: 8.0,
-                      ),
-                      Icon(EvaIcons.wifiOffOutline),
-                    ],
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'No Internet',
+                  style: TextStyle(
+                    fontSize: 19.0,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
+                SizedBox(
+                  width: 8.0,
+                ),
+                Icon(EvaIcons.wifiOffOutline),
+              ],
+            ),
+          ),
         );
       },
     );
   }
 
-  Widget detailsBookBody(BookModel? bookData, context) => Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          children: [
-            GestureDetector(
-              onTap: () async {
-                await showImage(context, 'imageDetail',
-                    '${itemData.volumeInfo?.imageLinks?.thumbnail}');
-              },
-              child: Hero(
-                tag: 'imageDetail',
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(
-                      16.0,
+  Widget detailsBookBody(BookModel? bookData, context) =>
+      SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            children: [
+              GestureDetector(
+                onTap: () async {
+                  await showImage(context, 'imageDetail',
+                      '${itemData.volumeInfo?.imageLinks?.thumbnail}');
+                },
+                child: Hero(
+                  tag: 'imageDetail',
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(
+                        16.0,
+                      ),
                     ),
-                  ),
-                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                  child: Image.network(
-                    '${itemData.volumeInfo?.imageLinks?.thumbnail}',
-                    fit: BoxFit.fill,
-                    height: 230.0,
-                    width: 170.0,
-                    frameBuilder:
-                        (context, child, frame, wasSynchronouslyLoaded) {
-                      return child;
-                    },
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) {
+                    clipBehavior: Clip.antiAliasWithSaveLayer,
+                    child: Image.network(
+                      '${itemData.volumeInfo?.imageLinks?.thumbnail}',
+                      fit: BoxFit.fill,
+                      height: 230.0,
+                      width: 170.0,
+                      frameBuilder:
+                          (context, child, frame, wasSynchronouslyLoaded) {
                         return child;
-                      } else {
+                      },
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) {
+                          return child;
+                        } else {
+                          return Container(
+                            height: 230.0,
+                            width: 170.0,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                width: 0.5,
+                                color: Colors.white,
+                              ),
+                              borderRadius: BorderRadius.circular(12.0),
+                            ),
+                            child:
+                            Center(child: CircularRingAdaptive(os: getOs())),
+                          );
+                        }
+                      },
+                      errorBuilder: (context, error, stackTrace) {
                         return Container(
                           height: 230.0,
                           width: 170.0,
@@ -104,96 +122,117 @@ class DetailsBookScreen extends StatelessWidget {
                             ),
                             borderRadius: BorderRadius.circular(12.0),
                           ),
-                          child:
-                              Center(child: CircularRingAdaptive(os: getOs())),
+                          child: const Center(
+                            child: Text(
+                              'Failed to load',
+                              style: TextStyle(fontSize: 14.0),
+                            ),
+                          ),
                         );
-                      }
-                    },
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        height: 230.0,
-                        width: 170.0,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            width: 0.5,
-                            color: Colors.white,
-                          ),
-                          borderRadius: BorderRadius.circular(12.0),
-                        ),
-                        child: const Center(
-                          child: Text(
-                            'Failed to load',
-                            style: TextStyle(fontSize: 14.0),
-                          ),
-                        ),
-                      );
-                    },
+                      },
+                    ),
                   ),
                 ),
               ),
-            ),
-            const SizedBox(
-              height: 20.0,
-            ),
-            Text.rich(
-              TextSpan(
-                  text: '${itemData.volumeInfo?.title} ',
-                  style: const TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  children: [
-                    TextSpan(
-                      text: ' (${itemData.volumeInfo?.publishedDate})',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        color: Colors.grey.shade300,
-                        fontWeight: FontWeight.bold,
-                      ),
+              const SizedBox(
+                height: 20.0,
+              ),
+              Text.rich(
+                TextSpan(
+                    text: '${itemData.volumeInfo?.title} ',
+                    style: const TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
                     ),
-                  ]),
-            ),
-            if (itemData.volumeInfo?.authors != null)
+                    children: [
+                      TextSpan(
+                        text: ' (${itemData.volumeInfo?.publishedDate})',
+                        style: TextStyle(
+                          fontSize: 16.0,
+                          color: Colors.grey.shade300,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ]),
+              ),
+              if (itemData.volumeInfo?.authors != null)
+                const SizedBox(
+                  height: 14.0,
+                ),
+              if (itemData.volumeInfo?.authors != null)
+                Text(
+                  '${itemData.volumeInfo?.authors?.join(',')}',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 16.0,
+                  ),
+                ),
               const SizedBox(
                 height: 14.0,
               ),
-            if (itemData.volumeInfo?.authors != null)
-              Text(
-                '${itemData.volumeInfo?.authors?.join(',')}',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 16.0,
-                ),
-              ),
-            const SizedBox(
-              height: 14.0,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  EvaIcons.star,
-                  color: HexColor('ffdd4f'),
-                ),
-                const SizedBox(
-                  width: 4.0,
-                ),
-                Text(
-                  '${itemData.volumeInfo?.averageRating ?? 'Not Rating'}',
-                  style: const TextStyle(
-                    fontSize: 14.5,
-                    // fontWeight: FontWeight.bold,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    EvaIcons.star,
+                    color: HexColor('ffdd4f'),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 20.0,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (itemData.accessInfo?.epub?.downloadLink != null)
+                  const SizedBox(
+                    width: 4.0,
+                  ),
+                  Text(
+                    '${itemData.volumeInfo?.averageRating ?? 'Not Rating'}',
+                    style: const TextStyle(
+                      fontSize: 14.5,
+                      // fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 20.0,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (itemData.accessInfo?.epub?.downloadLink != null)
+                    SizedBox(
+                      width: 120.0,
+                      child: MaterialButton(
+                        height: 45.0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        color: HexColor('009b9b').withOpacity(.8),
+                        onPressed: () {
+                          if (AppCubit
+                              .get(context)
+                              .hasInternet) {
+                            String? url = itemData.accessInfo?.epub?.downloadLink;
+                            url = url?.replaceFirst('http://', 'https://');
+                            Navigator.of(context).push(createSecondRoute(
+                                screen: WebViewScreen(
+                                    url: url)));
+                          } else {
+                            showFlutterToast(
+                                message: 'No Internet Connection',
+                                state: ToastStates.error,
+                                context: context);
+                          }
+                        },
+                        child: const Text(
+                          'Get it',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  if (itemData.accessInfo?.epub?.downloadLink != null)
+                    const SizedBox(
+                      width: 30.0,
+                    ),
                   SizedBox(
                     width: 120.0,
                     child: MaterialButton(
@@ -201,13 +240,16 @@ class DetailsBookScreen extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
-                      color: HexColor('009b9b').withOpacity(.8),
+                      color: HexColor('4bb1fe').withOpacity(.7),
                       onPressed: () {
-                        if (AppCubit.get(context).hasInternet) {
+                        if (AppCubit
+                            .get(context)
+                            .hasInternet) {
+                          String? url = itemData.volumeInfo?.previewLink;
+                          url = url?.replaceFirst('http://', 'https://');
                           Navigator.of(context).push(createSecondRoute(
                               screen: WebViewScreen(
-                                  url: itemData
-                                      .accessInfo?.epub?.downloadLink)));
+                                  url: url)));
                         } else {
                           showFlutterToast(
                               message: 'No Internet Connection',
@@ -216,7 +258,7 @@ class DetailsBookScreen extends StatelessWidget {
                         }
                       },
                       child: const Text(
-                        'Get it',
+                        'Preview',
                         style: TextStyle(
                           fontSize: 16.0,
                           fontWeight: FontWeight.bold,
@@ -224,87 +266,62 @@ class DetailsBookScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                if (itemData.accessInfo?.epub?.downloadLink != null)
-                  const SizedBox(
-                    width: 30.0,
-                  ),
-                SizedBox(
-                  width: 120.0,
-                  child: MaterialButton(
-                    height: 45.0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    color: HexColor('4bb1fe').withOpacity(.7),
-                    onPressed: () {
-                      if (AppCubit.get(context).hasInternet) {
-                        Navigator.of(context).push(createSecondRoute(
-                            screen: WebViewScreen(
-                                url: itemData.volumeInfo?.previewLink)));
-                      } else {
-                        showFlutterToast(
-                            message: 'No Internet Connection',
-                            state: ToastStates.error,
-                            context: context);
-                      }
-                    },
-                    child: const Text(
-                      'Preview',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                ],
+              ),
+              const SizedBox(
+                height: 50.0,
+              ),
+              const Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'You can also like',
+                  style: TextStyle(
+                    fontSize: 19.0,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              ],
-            ),
-            const Spacer(),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'You can also like',
-                style: TextStyle(
-                  fontSize: 19.0,
-                  fontWeight: FontWeight.bold,
+              ),
+              const SizedBox(
+                height: 12.0,
+              ),
+              SizedBox(
+                height: 160.0,
+                child: ConditionalBuilder(
+                  condition: (bookData?.items.length ?? 0) > 0,
+                  builder: (context) =>
+                      ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (context, index) =>
+                              buildItemOtherBook(bookData!.items[index], context),
+                          separatorBuilder: (context, index) =>
+                          const SizedBox(
+                            width: 12.0,
+                          ),
+                          itemCount: bookData?.items.length ?? 0),
+                  fallback: (context) =>
+                  const Center(
+                      child: Text(
+                        'There is no books yet',
+                        style: TextStyle(
+                            fontSize: 18.0, fontWeight: FontWeight.bold),
+                      )),
                 ),
               ),
-            ),
-            const SizedBox(
-              height: 12.0,
-            ),
-            SizedBox(
-              height: 160.0,
-              child: ConditionalBuilder(
-                condition: (bookData?.items.length ?? 0) > 0,
-                builder: (context) => ListView.separated(
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) =>
-                        buildItemOtherBook(bookData!.items[index], context),
-                    separatorBuilder: (context, index) => const SizedBox(
-                          width: 12.0,
-                        ),
-                    itemCount: bookData?.items.length ?? 0),
-                fallback: (context) => const Center(
-                    child: Text(
-                  'There is no books yet',
-                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-                )),
+              const SizedBox(
+                height: 10.0,
               ),
-            ),
-            const SizedBox(
-              height: 10.0,
-            ),
-          ],
+            ],
+          ),
         ),
       );
 
-  Widget buildItemOtherBook(ItemsData model, context) => GestureDetector(
+  Widget buildItemOtherBook(ItemsData model, context) =>
+      GestureDetector(
         onTap: () {
           Navigator.of(context).push(createRoute(
               screen: DetailsBookScreen(
-            itemData: model,
-          )));
+                itemData: model,
+              )));
         },
         child: Container(
           decoration: BoxDecoration(
@@ -366,7 +383,8 @@ class DetailsBookScreen extends StatelessWidget {
     return Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => Scaffold(
+            builder: (context) =>
+                Scaffold(
                   appBar: AppBar(
                     leading: IconButton(
                       onPressed: () {
@@ -415,9 +433,9 @@ class DetailsBookScreen extends StatelessWidget {
                                       width: double.infinity,
                                       child: Center(
                                           child: Text(
-                                        'Failed to load',
-                                        style: TextStyle(fontSize: 16.0),
-                                      ))),
+                                            'Failed to load',
+                                            style: TextStyle(fontSize: 16.0),
+                                          ))),
                                 ),
                               );
                             },
@@ -428,4 +446,5 @@ class DetailsBookScreen extends StatelessWidget {
                   ),
                 )));
   }
+
 }

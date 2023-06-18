@@ -37,7 +37,7 @@ class AppCubit extends Cubit<AppStates> {
         print('$error in getting data books.');
       }
       showFlutterToast(
-          message: 'Error , something happen',
+          message: 'Error , data not fetched',
           state: ToastStates.error,
           context: context);
       emit(ErrorGetBooksAppState(error));
@@ -82,12 +82,11 @@ class AppCubit extends Cubit<AppStates> {
   bool hasInternet = false;
   bool isSplashScreen = true;
 
-  void checkConnection() {
+  void checkConnection(context) {
     InternetConnectionChecker().onStatusChange.listen((status) {
       final hasInternet = status == InternetConnectionStatus.connected;
       this.hasInternet = hasInternet;
-      (isSplashScreen == false)
-          ? showSimpleNotification(
+      (isSplashScreen == false) ? showSimpleNotification(
               (hasInternet)
                   ? const Text(
                       'You are connected with internet',
@@ -106,8 +105,11 @@ class AppCubit extends Cubit<AppStates> {
                       ),
                     ),
               background: (hasInternet) ? HexColor('158b96') : Colors.red,
-            )
-          : null;
+            ) : null;
+
+      if(hasInternet) {
+        getBooks(context);
+      }
       emit(CheckConnectionAppState());
     });
     // emit(CheckConnectionAppState());

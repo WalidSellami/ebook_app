@@ -31,116 +31,118 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     DateTime timeBackPressed = DateTime.now();
-    return Builder(builder: (context) {
-      AppCubit.get(context).getBooks(context);
-      return BlocConsumer<AppCubit, AppStates>(
-        listener: (context, state) {},
-        builder: (context, state) {
-          var cubit = AppCubit.get(context);
-          var booksData = cubit.bookDataModel;
+    return Builder(
+      builder: (context) {
+        AppCubit.get(context).getBooks(context);
+        return BlocConsumer<AppCubit, AppStates>(
+          listener: (context, state) {},
+          builder: (context, state) {
+            var cubit = AppCubit.get(context);
+            var booksData = cubit.bookDataModel;
 
-          return WillPopScope(
-            onWillPop: () async {
-              final difference = DateTime.now().difference(timeBackPressed);
-              final isExitWarning = difference >= const Duration(seconds: 1);
-              timeBackPressed = DateTime.now();
+            return WillPopScope(
+              onWillPop: () async {
+                final difference = DateTime.now().difference(timeBackPressed);
+                final isExitWarning = difference >= const Duration(seconds: 1);
+                timeBackPressed = DateTime.now();
 
-              if (isExitWarning) {
-                const message = 'Press back again to exit';
-                showToast(
-                  message,
-                  context: context,
-                  backgroundColor: Colors.grey.shade700,
-                  animation: StyledToastAnimation.scale,
-                  reverseAnimation: StyledToastAnimation.fade,
-                  position: StyledToastPosition.bottom,
-                  animDuration: const Duration(milliseconds: 1500),
-                  duration: const Duration(seconds: 4),
-                  curve: Curves.elasticOut,
-                  reverseCurve: Curves.linear,
-                );
+                if (isExitWarning) {
+                  const message = 'Press back again to exit';
+                  showToast(
+                    message,
+                    context: context,
+                    backgroundColor: Colors.grey.shade800,
+                    animation: StyledToastAnimation.scale,
+                    reverseAnimation: StyledToastAnimation.fade,
+                    position: StyledToastPosition.bottom,
+                    animDuration: const Duration(milliseconds: 1500),
+                    duration: const Duration(seconds: 4),
+                    curve: Curves.elasticOut,
+                    reverseCurve: Curves.linear,
+                  );
 
-                return false;
-              } else {
-                SystemNavigator.pop();
-                return true;
-              }
-            },
-            child: Scaffold(
-              appBar: AppBar(
-                title: const Text(
-                  'EBooK',
-                ),
-                actions: [
-                  IconButton(
-                    onPressed: () {
-                      if (cubit.hasInternet) {
-                        Navigator.of(context)
-                            .push(createRoute(screen: const SearchScreen()));
-                      } else {
-                        pressed++;
-                        if (pressed == 3) {
-                          showAlert(context);
-                          setState(() {
-                            pressed = 0;
-                          });
+                  return false;
+                } else {
+                  SystemNavigator.pop();
+                  return true;
+                }
+              },
+              child: Scaffold(
+                appBar: AppBar(
+                  title: const Text(
+                    'EBooK',
+                  ),
+                  actions: [
+                    IconButton(
+                      onPressed: () {
+                        if (cubit.hasInternet) {
+                          Navigator.of(context)
+                              .push(createRoute(screen: const SearchScreen()));
+                        } else {
+                          pressed++;
+                          showFlutterToast(
+                              message: 'No Internet Connection',
+                              state: ToastStates.error,
+                              context: context);
+                          if (pressed == 3) {
+                            showAlert(context);
+                            setState(() {
+                              pressed = 0;
+                            });
+                          }
                         }
-                        showFlutterToast(
-                            message: 'No Internet Connection',
-                            state: ToastStates.error,
-                            context: context);
-                      }
-                    },
-                    icon: const Icon(
-                      EvaIcons.searchOutline,
+                      },
+                      icon: const Icon(
+                        EvaIcons.searchOutline,
+                      ),
+                      tooltip: 'Search',
                     ),
-                    tooltip: 'Search',
-                  ),
-                  const SizedBox(
-                    width: 6.0,
-                  ),
-                ],
-              ),
-              body: cubit.hasInternet
-                  ? ConditionalBuilder(
-                      condition: (booksData?.items.length ?? 0) > 0,
-                      builder: (context) => homebody(booksData),
-                      fallback: (context) => (state
-                                  is LoadingGetBooksAppState ||
-                              booksData == null)
-                          ? Center(child: CircularLoadingAdaptive(os: getOs()))
-                          : const Center(
-                              child: Text(
-                              'There is no books yet',
+                    const SizedBox(
+                      width: 6.0,
+                    ),
+                  ],
+                ),
+                body: cubit.hasInternet
+                    ? ConditionalBuilder(
+                        condition: (booksData?.items.length ?? 0) > 0,
+                        builder: (context) => homebody(booksData),
+                        fallback: (context) => (state
+                                    is LoadingGetBooksAppState ||
+                                booksData == null)
+                            ? Center(child: CircularLoadingAdaptive(os: getOs()))
+                            : const Center(
+                                child: Text(
+                                'There is no books yet',
+                                style: TextStyle(
+                                  fontSize: 19.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              )),
+                      )
+                    : const Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              'No Internet',
                               style: TextStyle(
                                 fontSize: 19.0,
                                 fontWeight: FontWeight.bold,
                               ),
-                            )),
-                    )
-                  : const Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'No Internet',
-                            style: TextStyle(
-                              fontSize: 19.0,
-                              fontWeight: FontWeight.bold,
                             ),
-                          ),
-                          SizedBox(
-                            width: 8.0,
-                          ),
-                          Icon(EvaIcons.wifiOffOutline),
-                        ],
+                            SizedBox(
+                              width: 8.0,
+                            ),
+                            Icon(EvaIcons.wifiOffOutline),
+                          ],
+                        ),
                       ),
-                    ),
-            ),
-          );
-        },
-      );
-    });
+              ),
+            );
+          },
+        );
+      }
+    );
   }
 
   Widget homebody(BookModel? book) => RefreshIndicator(
@@ -489,16 +491,14 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text(
           'No Internet Connection!',
           style: TextStyle(
-            fontSize: 19.0,
+            fontSize: 18.0,
             fontWeight: FontWeight.bold,
           ),
         ),
-        content: Text(
+        content: const Text(
           'You are currently offline!',
           style: TextStyle(
             fontSize: 17.0,
-            color: Colors.grey.shade700,
-            fontWeight: FontWeight.bold,
           ),
         ),
         actions: [
@@ -535,4 +535,5 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
 }

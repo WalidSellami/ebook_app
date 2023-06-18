@@ -13,7 +13,7 @@ class WebViewScreen extends StatelessWidget {
       appBar: AppBar(),
       body: WebViewWidget(
         controller: WebViewController()
-          ..setJavaScriptMode(JavaScriptMode.disabled)
+          ..setJavaScriptMode(JavaScriptMode.unrestricted)
           ..setBackgroundColor(const Color(0xff151d24))
           ..setNavigationDelegate(
             NavigationDelegate(
