@@ -3,7 +3,6 @@ import 'package:ebook/shared/components/Components.dart';
 import 'package:ebook/shared/cubit/Cubit.dart';
 import 'package:ebook/shared/cubit/States.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -14,10 +13,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController animationController;
-  late Animation<double> animation;
+class _SplashScreenState extends State<SplashScreen> {
+
   bool isVisible = false;
 
   @override
@@ -25,12 +22,6 @@ class _SplashScreenState extends State<SplashScreen>
     initialize();
     super.initState();
   }
-
-  // @override
-  // void dispose() {
-  //   animationController.dispose();
-  //   super.dispose();
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -65,55 +56,10 @@ class _SplashScreenState extends State<SplashScreen>
       });
     });
 
-      // animationController = AnimationController(
-      //     vsync: this, duration: const Duration(milliseconds: 1200));
-      // animation = Tween<double>(begin: 0, end: 1).animate(animationController);
-      // animationController.forward();
-
     Future.delayed(const Duration(milliseconds: 2500)).then((value) {
         navigateToAndNotReturn(context: context, screen: const HomeScreen());
         AppCubit.get(context).changeStatusScreen();
       });
   }
 
-  dynamic showAlert(context) {
-    return showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(
-            8.0,
-          ),
-        ),
-        title: const Text(
-          'No Internet Connection!',
-          style: TextStyle(
-            fontSize: 18.0,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        content: const Text(
-          'You are currently offline!',
-          style: TextStyle(
-            fontSize: 17.0,
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              SystemNavigator.pop();
-            },
-            child: const Text(
-              'Exit',
-              style: TextStyle(
-                color: Colors.red,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
