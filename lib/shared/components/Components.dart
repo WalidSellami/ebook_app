@@ -47,32 +47,6 @@ Route createSecondRoute({required screen}) {
 }
 
 
-Widget defaultButton({
-  double width = 120.0,
-  double height = 40.0,
-  required String text,
-  required Function function,
-  required String hexColor,
-}) => SizedBox(
-  width: width,
-  child: MaterialButton(
-    height: height,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12.0),
-    ),
-    color: HexColor(hexColor),
-    onPressed: function(),
-    child: Text(
-      text,
-      style: const TextStyle(
-        fontSize: 16.0,
-        fontWeight: FontWeight.bold,
-      ),
-    ),
-  ),
-);
-
-
 enum ToastStates {success , error , warning}
 
 void showFlutterToast({

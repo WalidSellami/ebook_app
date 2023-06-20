@@ -22,11 +22,7 @@ class AppCubit extends Cubit<AppStates> {
     DioHelper.getData(
       url: '/volumes',
       query: {
-        'q': 'programming',
-        'filter': 'ebooks',
-        'printType': 'books',
-        'orderBy': 'newest',
-        'projection': 'full',
+        'q': 'Any',
         'key': 'AIzaSyANRigeCi9Uod5wYnQjx9_5VNuybNXfYPQ',
       },
     ).then((value) {
@@ -53,10 +49,6 @@ class AppCubit extends Cubit<AppStates> {
       url: '/volumes',
       query: {
         'q': value,
-        'filter': 'ebooks',
-        'printType': 'books',
-        'orderBy': 'newest',
-        'projection': 'full',
         'key': 'AIzaSyANRigeCi9Uod5wYnQjx9_5VNuybNXfYPQ',
       },
     ).then((value) {
@@ -66,10 +58,10 @@ class AppCubit extends Cubit<AppStates> {
       if (kDebugMode) {
         print('$error in search book.');
       }
-      showFlutterToast(
-          message: 'Error , something happen try again',
-          state: ToastStates.error,
-          context: context);
+      // showFlutterToast(
+      //     message: 'Error , something happen try again',
+      //     state: ToastStates.error,
+      //     context: context);
       emit(ErrorSearchBookAppState(error));
     });
   }

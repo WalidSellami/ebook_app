@@ -214,7 +214,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           clipBehavior: Clip.antiAliasWithSaveLayer,
           child: Image.network(
-            '${model.volumeInfo?.imageLinks?.thumbnail}',
+            '${(model.volumeInfo?.imageLinks?.thumbnail)?.replaceFirst('http://', 'https://')}',
             fit: BoxFit.fill,
             height: 210.0,
             width: 150.0,
@@ -281,7 +281,7 @@ class _HomeScreenState extends State<HomeScreen> {
               GestureDetector(
                 onTap: () async {
                   await showImage(context, '${model.id}',
-                      '${model.volumeInfo?.imageLinks?.thumbnail}');
+                      '${(model.volumeInfo?.imageLinks?.smallThumbnail)?.replaceFirst('http://', 'https://')}');
                 },
                 child: Hero(
                   tag: '${model.id}',
@@ -293,7 +293,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     clipBehavior: Clip.antiAliasWithSaveLayer,
                     child: Image.network(
-                      '${model.volumeInfo?.imageLinks?.smallThumbnail}',
+                      '${(model.volumeInfo?.imageLinks?.smallThumbnail)?.replaceFirst('http://', 'https://')}',
                       fit: BoxFit.fill,
                       height: 110.0,
                       width: 110.0,
@@ -362,7 +362,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     if (model.volumeInfo?.authors != null)
                       const SizedBox(
-                        height: 6.0,
+                        height: 14.0,
                       ),
                     if (model.volumeInfo?.authors != null)
                       Text(
@@ -373,40 +373,40 @@ class _HomeScreenState extends State<HomeScreen> {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                    const SizedBox(
-                      height: 6.0,
-                    ),
-                    Row(
-                      children: [
-                        Icon(
-                          EvaIcons.star,
-                          color: HexColor('ffdd4f'),
-                        ),
-                        const SizedBox(
-                          width: 4.0,
-                        ),
-                        Text(
-                          '${model.volumeInfo?.averageRating ?? 'Not Rating'}',
-                          style: const TextStyle(
-                            fontSize: 14.5,
-                            // fontWeight: FontWeight.bold,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        // const SizedBox(
-                        //   width: 4.0,
-                        // ),
-                        // Text(
-                        //   '(1234)',
-                        //   style: TextStyle(
-                        //     fontSize: 15.0,
-                        //     color: Colors.grey.shade300,
-                        //     fontWeight: FontWeight.bold,
-                        //     overflow: TextOverflow.ellipsis,
-                        //   ),
-                        // ),
-                      ],
-                    ),
+                    // const SizedBox(
+                    //   height: 6.0,
+                    // ),
+                    // Row(
+                    //   children: [
+                    //     Icon(
+                    //       EvaIcons.star,
+                    //       color: HexColor('ffdd4f'),
+                    //     ),
+                    //     const SizedBox(
+                    //       width: 4.0,
+                    //     ),
+                    //     Text(
+                    //       '${model.volumeInfo?.averageRating ?? 'Not Rating'}',
+                    //       style: const TextStyle(
+                    //         fontSize: 14.5,
+                    //         // fontWeight: FontWeight.bold,
+                    //         overflow: TextOverflow.ellipsis,
+                    //       ),
+                    //     ),
+                    //     // const SizedBox(
+                    //     //   width: 4.0,
+                    //     // ),
+                    //     // Text(
+                    //     //   '(1234)',
+                    //     //   style: TextStyle(
+                    //     //     fontSize: 15.0,
+                    //     //     color: Colors.grey.shade300,
+                    //     //     fontWeight: FontWeight.bold,
+                    //     //     overflow: TextOverflow.ellipsis,
+                    //     //   ),
+                    //     // ),
+                    //   ],
+                    // ),
                   ],
                 ),
               ),

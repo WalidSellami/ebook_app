@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'EBooK App',
-          darkTheme: theme,
+          theme: theme,
           home: const SplashScreen(),
         ),
       ),

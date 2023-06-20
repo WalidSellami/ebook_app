@@ -77,6 +77,7 @@ class DetailsBookScreen extends StatelessWidget {
                 child: Hero(
                   tag: 'imageDetail',
                   child: Container(
+                    padding: const EdgeInsets.all(2.0),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(
                         16.0,
@@ -117,7 +118,7 @@ class DetailsBookScreen extends StatelessWidget {
                           width: 170.0,
                           decoration: BoxDecoration(
                             border: Border.all(
-                              width: 0.5,
+                              width: 1.0,
                               color: Colors.white,
                             ),
                             borderRadius: BorderRadius.circular(12.0),
@@ -138,6 +139,7 @@ class DetailsBookScreen extends StatelessWidget {
                 height: 20.0,
               ),
               Text.rich(
+                textAlign: TextAlign.center,
                 TextSpan(
                     text: '${itemData.volumeInfo?.title} ',
                     style: const TextStyle(
@@ -145,8 +147,9 @@ class DetailsBookScreen extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                     children: [
+                      if(itemData.volumeInfo?.publishedDate != null)
                       TextSpan(
-                        text: ' (${itemData.volumeInfo?.publishedDate})',
+                        text: ' (${((itemData.volumeInfo?.publishedDate?.length ?? 0) > 10) ? itemData.volumeInfo?.publishedDate?.substring(0,10) : itemData.volumeInfo?.publishedDate})',
                         style: TextStyle(
                           fontSize: 16.0,
                           color: Colors.grey.shade300,
@@ -167,28 +170,28 @@ class DetailsBookScreen extends StatelessWidget {
                     fontSize: 16.0,
                   ),
                 ),
-              const SizedBox(
-                height: 14.0,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    EvaIcons.star,
-                    color: HexColor('ffdd4f'),
-                  ),
-                  const SizedBox(
-                    width: 4.0,
-                  ),
-                  Text(
-                    '${itemData.volumeInfo?.averageRating ?? 'Not Rating'}',
-                    style: const TextStyle(
-                      fontSize: 14.5,
-                      // fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
+              // const SizedBox(
+              //   height: 14.0,
+              // ),
+              // Row(
+              //   mainAxisAlignment: MainAxisAlignment.center,
+              //   children: [
+              //     Icon(
+              //       EvaIcons.star,
+              //       color: HexColor('ffdd4f'),
+              //     ),
+              //     const SizedBox(
+              //       width: 4.0,
+              //     ),
+              //     Text(
+              //       '${itemData.volumeInfo?.averageRating ?? 'Not Rating'}',
+              //       style: const TextStyle(
+              //         fontSize: 14.5,
+              //         // fontWeight: FontWeight.bold,
+              //       ),
+              //     ),
+              //   ],
+              // ),
               const SizedBox(
                 height: 20.0,
               ),
@@ -370,7 +373,7 @@ class DetailsBookScreen extends StatelessWidget {
                 child: const Center(
                   child: Text(
                     'Failed to load',
-                    style: TextStyle(fontSize: 14.0),
+                    style: TextStyle(fontSize: 13.0),
                   ),
                 ),
               );
