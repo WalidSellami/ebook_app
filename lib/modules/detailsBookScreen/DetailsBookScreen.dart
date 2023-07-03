@@ -195,81 +195,38 @@ class DetailsBookScreen extends StatelessWidget {
               const SizedBox(
                 height: 20.0,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (itemData.accessInfo?.epub?.downloadLink != null)
-                    SizedBox(
-                      width: 120.0,
-                      child: MaterialButton(
-                        height: 45.0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        color: HexColor('009b9b').withOpacity(.8),
-                        onPressed: () {
-                          if (AppCubit
-                              .get(context)
-                              .hasInternet) {
-                            String? url = itemData.accessInfo?.epub?.downloadLink;
-                            url = url?.replaceFirst('http://', 'https://');
-                            Navigator.of(context).push(createSecondRoute(
-                                screen: WebViewScreen(
-                                    url: url)));
-                          } else {
-                            showFlutterToast(
-                                message: 'No Internet Connection',
-                                state: ToastStates.error,
-                                context: context);
-                          }
-                        },
-                        child: const Text(
-                          'Get it',
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  if (itemData.accessInfo?.epub?.downloadLink != null)
-                    const SizedBox(
-                      width: 30.0,
-                    ),
-                  SizedBox(
-                    width: 120.0,
-                    child: MaterialButton(
-                      height: 45.0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      color: HexColor('4bb1fe').withOpacity(.7),
-                      onPressed: () {
-                        if (AppCubit
-                            .get(context)
-                            .hasInternet) {
-                          String? url = itemData.volumeInfo?.previewLink;
-                          url = url?.replaceFirst('http://', 'https://');
-                          Navigator.of(context).push(createSecondRoute(
-                              screen: WebViewScreen(
-                                  url: url)));
-                        } else {
-                          showFlutterToast(
-                              message: 'No Internet Connection',
-                              state: ToastStates.error,
-                              context: context);
-                        }
-                      },
-                      child: const Text(
-                        'Preview',
-                        style: TextStyle(
-                          fontSize: 16.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+              SizedBox(
+                width: 120.0,
+                child: MaterialButton(
+                  height: 45.0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  color: HexColor('4bb1fe').withOpacity(.7),
+                  onPressed: () async {
+                    if (AppCubit
+                        .get(context)
+                        .hasInternet) {
+                      String? url = (itemData.volumeInfo?.previewLink)?.replaceFirst('http://', 'https://');
+                      // await launchBaseUrl(context, url!);
+                      Navigator.of(context).push(createSecondRoute(
+                          screen: WebViewScreen(
+                              url: url)));
+                    } else {
+                      showFlutterToast(
+                          message: 'No Internet Connection',
+                          state: ToastStates.error,
+                          context: context);
+                    }
+                  },
+                  child: const Text(
+                    'Preview',
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ],
+                ),
               ),
               const SizedBox(
                 height: 50.0,
@@ -449,5 +406,16 @@ class DetailsBookScreen extends StatelessWidget {
                   ),
                 )));
   }
+
+
+  // Future<void> launchBaseUrl(context , String url) async {
+  //   final Uri baseUrl = Uri.parse(url);
+  //   if (await canLaunchUrl(baseUrl)) {
+  //   await launchUrl(baseUrl);
+  //   } else {
+  //   showFlutterToast(message: 'Error, Could not lunch this url', state: ToastStates.error, context: context);
+  //   }
+  //
+  // }
 
 }

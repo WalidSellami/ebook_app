@@ -49,5 +49,9 @@
 	<true/>
 	<key>com.apple.security.network.client</key>
     <true/>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+      <string>https</string>
+    </array>
 </dict>
 </plist>

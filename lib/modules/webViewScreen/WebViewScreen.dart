@@ -1,3 +1,4 @@
+import 'package:ebook/shared/components/Components.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -23,16 +24,16 @@ class WebViewScreen extends StatelessWidget {
               onWebResourceError: (WebResourceError error) {
                 if (kDebugMode) {
                   print('WebView error: ${error.description}');
+                  showFlutterToast(message: error.description.toString(), state: ToastStates.error, context: context);
                 }
               },
               onNavigationRequest: (NavigationRequest request) {
                 if (request.url.startsWith('http://') ||
                     request.url.startsWith('https://')) {
                   return NavigationDecision.navigate;
-                } else {
+                }
                   return NavigationDecision.prevent;
                 }
-              },
             ),
           )
           ..loadRequest(Uri.parse(url!)),
