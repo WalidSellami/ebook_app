@@ -1,6 +1,6 @@
 # ebook
 
-A new Flutter project.
+A new Flutter app project  --> search and read books.
 
 ## Getting Started
 
