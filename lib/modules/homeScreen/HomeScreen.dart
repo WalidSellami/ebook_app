@@ -1,7 +1,6 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:ebook/models/bookModel/BookModel.dart';
 import 'package:ebook/modules/detailsBookScreen/DetailsBookScreen.dart';
-import 'package:ebook/modules/searchScreen/SearchScreen.dart';
 import 'package:ebook/shared/adaptive/CircularLoadingAdaptive.dart';
 import 'package:ebook/shared/adaptive/CircularRingAdaptive.dart';
 import 'package:ebook/shared/components/Components.dart';
@@ -28,120 +27,167 @@ class _HomeScreenState extends State<HomeScreen> {
 
   int pressed = 0;
 
+  var searchController = TextEditingController();
+
+  bool isSearch = false;
+
+  @override
+  void initState() {
+    super.initState();
+    searchController.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+
   @override
   Widget build(BuildContext context) {
     DateTime timeBackPressed = DateTime.now();
-    return Builder(
-      builder: (context) {
-        AppCubit.get(context).getBooks(context);
-        return BlocConsumer<AppCubit, AppStates>(
-          listener: (context, state) {},
-          builder: (context, state) {
-            var cubit = AppCubit.get(context);
-            var booksData = cubit.bookDataModel;
+    return BlocConsumer<AppCubit, AppStates>(
+      listener: (context, state) {},
+      builder: (context, state) {
+        var cubit = AppCubit.get(context);
+        var booksData = cubit.bookDataModel;
 
-            return WillPopScope(
-              onWillPop: () async {
-                final difference = DateTime.now().difference(timeBackPressed);
-                final isExitWarning = difference >= const Duration(seconds: 1);
-                timeBackPressed = DateTime.now();
+        return WillPopScope(
+          onWillPop: () async {
+            final difference = DateTime.now().difference(timeBackPressed);
+            final isExitWarning = difference >= const Duration(seconds: 1);
+            timeBackPressed = DateTime.now();
 
-                if (isExitWarning) {
-                  const message = 'Press back again to exit';
-                  showToast(
-                    message,
-                    context: context,
-                    backgroundColor: Colors.grey.shade800,
-                    animation: StyledToastAnimation.scale,
-                    reverseAnimation: StyledToastAnimation.fade,
-                    position: StyledToastPosition.bottom,
-                    animDuration: const Duration(milliseconds: 1500),
-                    duration: const Duration(seconds: 4),
-                    curve: Curves.elasticOut,
-                    reverseCurve: Curves.linear,
-                  );
+            if (isExitWarning) {
+              const message = 'Press back again to exit';
+              showToast(
+                message,
+                context: context,
+                backgroundColor: Colors.grey.shade800,
+                animation: StyledToastAnimation.scale,
+                reverseAnimation: StyledToastAnimation.fade,
+                position: StyledToastPosition.bottom,
+                animDuration: const Duration(milliseconds: 1500),
+                duration: const Duration(seconds: 4),
+                curve: Curves.elasticOut,
+                reverseCurve: Curves.linear,
+              );
 
-                  return false;
-                } else {
-                  SystemNavigator.pop();
-                  return true;
-                }
-              },
-              child: Scaffold(
-                appBar: AppBar(
-                  title: const Text(
-                    'EBooK',
-                  ),
-                  actions: [
-                    IconButton(
-                      onPressed: () {
-                        if (cubit.hasInternet) {
-                          Navigator.of(context)
-                              .push(createRoute(screen: const SearchScreen()));
-                        } else {
-                          pressed++;
-                          showFlutterToast(
-                              message: 'No Internet Connection',
-                              state: ToastStates.error,
-                              context: context);
-                          if (pressed == 3) {
-                            showAlert(context);
-                            setState(() {
-                              pressed = 0;
-                            });
-                          }
-                        }
-                      },
-                      icon: const Icon(
-                        EvaIcons.searchOutline,
-                      ),
-                      tooltip: 'Search',
-                    ),
-                    const SizedBox(
-                      width: 6.0,
-                    ),
-                  ],
-                ),
-                body: cubit.hasInternet
-                    ? ConditionalBuilder(
-                        condition: (booksData?.items.length ?? 0) > 0,
-                        builder: (context) => homebody(booksData),
-                        fallback: (context) => (state
-                                    is LoadingGetBooksAppState ||
-                                booksData == null)
-                            ? Center(child: CircularLoadingAdaptive(os: getOs()))
-                            : const Center(
-                                child: Text(
-                                'There is no books yet',
-                                style: TextStyle(
-                                  fontSize: 19.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              )),
-                      )
-                    : const Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'No Internet',
-                              style: TextStyle(
-                                fontSize: 19.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 8.0,
-                            ),
-                            Icon(EvaIcons.wifiOffOutline),
-                          ],
-                        ),
-                      ),
-              ),
-            );
+              return false;
+            } else {
+              SystemNavigator.pop();
+              return true;
+            }
           },
+          child: Scaffold(
+            appBar: AppBar(
+              title: (!isSearch) ?  const Text(
+                'EBook',
+              ) : TextFormField(
+                controller: searchController,
+                keyboardType: TextInputType.text,
+                decoration: InputDecoration(
+                  hintText: 'Type name book ...',
+                  suffixIcon: searchController.text.isNotEmpty ?
+                  IconButton(
+                      onPressed: () {
+                        searchController.text = '';
+                      },
+                      icon: Icon(
+                        Icons.close_rounded,
+                        size: 19.0,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                  ) : null,
+                ),
+                onChanged: (value) {
+                  if(cubit.hasInternet) {
+                    cubit.searchBook(value: value, context: context);
+                  } else {
+                    showFlutterToast(message: 'No Internet Connection', state: ToastStates.error, context: context);
+                  }
+                },
+                onFieldSubmitted: (value) {
+                  if(cubit.hasInternet) {
+                    cubit.searchBook(value: value, context: context);
+                  } else {
+                    showFlutterToast(message: 'No Internet Connection', state: ToastStates.error, context: context);
+                  }
+                },
+              ),
+              actions: [
+                if(booksData != null)
+                IconButton(
+                  onPressed: () {
+                    if (cubit.hasInternet) {
+                      setState(() {
+                        isSearch = !isSearch;
+                      });
+                    } else {
+                      pressed++;
+                      showFlutterToast(
+                          message: 'No Internet Connection',
+                          state: ToastStates.error,
+                          context: context);
+                      if (pressed == 3) {
+                        showAlert(context);
+                        setState(() {
+                          pressed = 0;
+                        });
+                      }
+                    }
+                  },
+                  icon: Icon(
+                    (!isSearch) ? EvaIcons.searchOutline : Icons.close_rounded,
+                  ),
+                  tooltip: (!isSearch) ? 'Search' : 'Close',
+                ),
+                const SizedBox(
+                  width: 6.0,
+                ),
+              ],
+            ),
+            body: cubit.hasInternet
+                ? ConditionalBuilder(
+                    condition: (booksData?.items.length ?? 0) > 0,
+                    builder: (context) => homebody(booksData),
+                    fallback: (context) => (state
+                                is LoadingGetBooksAppState ||
+                            booksData == null)
+                        ? Center(child: CircularLoadingAdaptive(os: getOs()))
+                        : const Center(
+                            child: Text(
+                            'There is no books yet',
+                            style: TextStyle(
+                              fontSize: 19.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )),
+                  )
+                : const Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'No Internet',
+                          style: TextStyle(
+                            fontSize: 19.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 8.0,
+                        ),
+                        Icon(EvaIcons.wifiOffOutline),
+                      ],
+                    ),
+                  ),
+          ),
         );
-      }
+      },
     );
   }
 
@@ -154,14 +200,21 @@ class _HomeScreenState extends State<HomeScreen> {
           return Future<void>.delayed(const Duration(seconds: 2));
         },
         child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          physics: const BouncingScrollPhysics(),
+          scrollDirection: Axis.vertical,
           child: Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.symmetric(
+              horizontal: 10.0,
+              vertical: 12.0,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 SizedBox(
                   height: 210.0,
                   child: ListView.separated(
+                      physics: const BouncingScrollPhysics(),
                       scrollDirection: Axis.horizontal,
                       itemBuilder: (context, index) =>
                           buildItemBook(book!.items[index], context),
@@ -219,6 +272,20 @@ class _HomeScreenState extends State<HomeScreen> {
             height: 210.0,
             width: 150.0,
             frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+              if(frame == null) {
+                return Container(
+                  height: 210.0,
+                  width: 150.0,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      width: 0.5,
+                      color: Colors.white,
+                    ),
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  child: Center(child: CircularRingAdaptive(os: getOs())),
+                );
+              }
               return child;
             },
             loadingBuilder: (context, child, loadingProgress) {
@@ -226,8 +293,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 return child;
               } else {
                 return Container(
-                  height: 200.0,
-                  width: 140.0,
+                  height: 210.0,
+                  width: 150.0,
                   decoration: BoxDecoration(
                     border: Border.all(
                       width: 0.5,
@@ -240,23 +307,7 @@ class _HomeScreenState extends State<HomeScreen> {
               }
             },
             errorBuilder: (context, error, stackTrace) {
-              return Container(
-                height: 200.0,
-                width: 140.0,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    width: 0.5,
-                    color: Colors.white,
-                  ),
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-                child: const Center(
-                  child: Text(
-                    'Failed to load',
-                    style: TextStyle(fontSize: 14.0),
-                  ),
-                ),
-              );
+              return errorBuilder(width: 150.0, height: 210.0);
             },
           ),
         ),
@@ -299,6 +350,21 @@ class _HomeScreenState extends State<HomeScreen> {
                       width: 110.0,
                       frameBuilder:
                           (context, child, frame, wasSynchronouslyLoaded) {
+                        if(frame == null) {
+                          return Container(
+                            height: 110.0,
+                            width: 110.0,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                width: 0.5,
+                                color: Colors.white,
+                              ),
+                              borderRadius: BorderRadius.circular(12.0),
+                            ),
+                            child: Center(
+                                child: CircularRingAdaptive(os: getOs())),
+                          );
+                        }
                         return child;
                       },
                       loadingBuilder: (context, child, loadingProgress) {
@@ -321,23 +387,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         }
                       },
                       errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          height: 110.0,
-                          width: 110.0,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              width: 0.5,
-                              color: Colors.white,
-                            ),
-                            borderRadius: BorderRadius.circular(12.0),
-                          ),
-                          child: const Center(
-                            child: Text(
-                              'Failed to load',
-                              style: TextStyle(fontSize: 12.0),
-                            ),
-                          ),
-                        );
+                        return errorBuilder(width: 110.0, height: 110.0);
                       },
                     ),
                   ),
@@ -373,40 +423,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                    // const SizedBox(
-                    //   height: 6.0,
-                    // ),
-                    // Row(
-                    //   children: [
-                    //     Icon(
-                    //       EvaIcons.star,
-                    //       color: HexColor('ffdd4f'),
-                    //     ),
-                    //     const SizedBox(
-                    //       width: 4.0,
-                    //     ),
-                    //     Text(
-                    //       '${model.volumeInfo?.averageRating ?? 'Not Rating'}',
-                    //       style: const TextStyle(
-                    //         fontSize: 14.5,
-                    //         // fontWeight: FontWeight.bold,
-                    //         overflow: TextOverflow.ellipsis,
-                    //       ),
-                    //     ),
-                    //     // const SizedBox(
-                    //     //   width: 4.0,
-                    //     // ),
-                    //     // Text(
-                    //     //   '(1234)',
-                    //     //   style: TextStyle(
-                    //     //     fontSize: 15.0,
-                    //     //     color: Colors.grey.shade300,
-                    //     //     fontWeight: FontWeight.bold,
-                    //     //     overflow: TextOverflow.ellipsis,
-                    //     //   ),
-                    //     // ),
-                    //   ],
-                    // ),
                   ],
                 ),
               ),
@@ -461,14 +477,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               }
                             },
                             errorBuilder: (context, error, stackTrace) {
-                              return const SizedBox(
+                              return SizedBox(
                                   height: 450.0,
                                   width: double.infinity,
                                   child: Center(
-                                      child: Text(
-                                    'Failed to load',
-                                    style: TextStyle(fontSize: 16.0),
-                                  )));
+                                      child: Image.asset('assets/images/mark.jpg',
+                                        fit: BoxFit.fitWidth,
+                                      )));
                             },
                           ),
                         ),
@@ -512,6 +527,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: const Text(
               'Wait',
               style: TextStyle(
+                fontSize: 16.0,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -526,6 +542,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: const Text(
               'Exit',
               style: TextStyle(
+                fontSize: 16.0,
                 color: Colors.red,
                 fontWeight: FontWeight.bold,
               ),

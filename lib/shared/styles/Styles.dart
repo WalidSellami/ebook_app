@@ -5,6 +5,7 @@ import 'package:hexcolor/hexcolor.dart';
 
 ThemeData theme = ThemeData(
  useMaterial3: true,
+ visualDensity: VisualDensity.adaptivePlatformDensity,
  fontFamily: 'Varela',
  scaffoldBackgroundColor: HexColor('151d24'),
  colorScheme: ColorScheme.dark(

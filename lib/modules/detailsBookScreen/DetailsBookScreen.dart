@@ -1,6 +1,5 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:ebook/models/bookModel/BookModel.dart';
-import 'package:ebook/modules/webViewScreen/WebViewScreen.dart';
 import 'package:ebook/shared/adaptive/CircularLoadingAdaptive.dart';
 import 'package:ebook/shared/adaptive/CircularRingAdaptive.dart';
 import 'package:ebook/shared/components/Components.dart';
@@ -11,6 +10,7 @@ import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DetailsBookScreen extends StatelessWidget {
   final ItemsData itemData;
@@ -65,6 +65,8 @@ class DetailsBookScreen extends StatelessWidget {
 
   Widget detailsBookBody(BookModel? bookData, context) =>
       SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        physics: const BouncingScrollPhysics(),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(
@@ -113,23 +115,7 @@ class DetailsBookScreen extends StatelessWidget {
                         }
                       },
                       errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          height: 230.0,
-                          width: 170.0,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              width: 1.0,
-                              color: Colors.white,
-                            ),
-                            borderRadius: BorderRadius.circular(12.0),
-                          ),
-                          child: const Center(
-                            child: Text(
-                              'Failed to load',
-                              style: TextStyle(fontSize: 14.0),
-                            ),
-                          ),
-                        );
+                        return errorBuilder(width: 170.0, height: 230.0);
                       },
                     ),
                   ),
@@ -170,28 +156,6 @@ class DetailsBookScreen extends StatelessWidget {
                     fontSize: 16.0,
                   ),
                 ),
-              // const SizedBox(
-              //   height: 14.0,
-              // ),
-              // Row(
-              //   mainAxisAlignment: MainAxisAlignment.center,
-              //   children: [
-              //     Icon(
-              //       EvaIcons.star,
-              //       color: HexColor('ffdd4f'),
-              //     ),
-              //     const SizedBox(
-              //       width: 4.0,
-              //     ),
-              //     Text(
-              //       '${itemData.volumeInfo?.averageRating ?? 'Not Rating'}',
-              //       style: const TextStyle(
-              //         fontSize: 14.5,
-              //         // fontWeight: FontWeight.bold,
-              //       ),
-              //     ),
-              //   ],
-              // ),
               const SizedBox(
                 height: 20.0,
               ),
@@ -208,10 +172,10 @@ class DetailsBookScreen extends StatelessWidget {
                         .get(context)
                         .hasInternet) {
                       String? url = (itemData.volumeInfo?.previewLink)?.replaceFirst('http://', 'https://');
-                      // await launchBaseUrl(context, url!);
-                      Navigator.of(context).push(createSecondRoute(
-                          screen: WebViewScreen(
-                              url: url)));
+                      await launchBaseUrl(context, url!);
+                      // Navigator.of(context).push(createSecondRoute(
+                      //     screen: WebViewScreen(
+                      //         url: url)));
                     } else {
                       showFlutterToast(
                           message: 'No Internet Connection',
@@ -251,6 +215,7 @@ class DetailsBookScreen extends StatelessWidget {
                   builder: (context) =>
                       ListView.separated(
                           scrollDirection: Axis.horizontal,
+                          physics: const BouncingScrollPhysics(),
                           itemBuilder: (context, index) =>
                               buildItemOtherBook(bookData!.items[index], context),
                           separatorBuilder: (context, index) =>
@@ -296,6 +261,20 @@ class DetailsBookScreen extends StatelessWidget {
             height: 160.0,
             width: 115.0,
             frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+              if(frame == null) {
+                return Container(
+                  height: 160.0,
+                  width: 110.0,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      width: 0.5,
+                      color: Colors.white,
+                    ),
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  child: Center(child: CircularRingAdaptive(os: getOs())),
+                );
+              }
               return child;
             },
             loadingBuilder: (context, child, loadingProgress) {
@@ -317,23 +296,7 @@ class DetailsBookScreen extends StatelessWidget {
               }
             },
             errorBuilder: (context, error, stackTrace) {
-              return Container(
-                height: 160.0,
-                width: 110.0,
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    width: 0.5,
-                    color: Colors.white,
-                  ),
-                  borderRadius: BorderRadius.circular(12.0),
-                ),
-                child: const Center(
-                  child: Text(
-                    'Failed to load',
-                    style: TextStyle(fontSize: 13.0),
-                  ),
-                ),
-              );
+              return errorBuilder(width: 110.0, height: 160.0);
             },
           ),
         ),
@@ -371,6 +334,14 @@ class DetailsBookScreen extends StatelessWidget {
                             fit: BoxFit.fill,
                             frameBuilder: (context, child, frame,
                                 wasSynchronouslyLoaded) {
+                              if(frame == null) {
+                                return SizedBox(
+                                    height: 450.0,
+                                    width: double.infinity,
+                                    child: Center(
+                                        child: CircularLoadingAdaptive(
+                                            os: getOs())));
+                              }
                               return child;
                             },
                             loadingBuilder: (context, child, loadingProgress) {
@@ -386,18 +357,25 @@ class DetailsBookScreen extends StatelessWidget {
                               }
                             },
                             errorBuilder: (context, error, stackTrace) {
-                              return const Scaffold(
-                                body: Center(
+                              return Center(
                                   child: SizedBox(
                                       height: 450.0,
                                       width: double.infinity,
                                       child: Center(
-                                          child: Text(
-                                            'Failed to load',
-                                            style: TextStyle(fontSize: 16.0),
-                                          ))),
-                                ),
-                              );
+                                          child: Image.asset('assets/images/mark.jpg',
+                                              fit: BoxFit.fitWidth,
+                                              frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+                                                if(frame == null) {
+                                                  return SizedBox(
+                                                    height: 450.0,
+                                                    width: double.infinity,
+                                                    child: Center(child: CircularLoadingAdaptive(os: getOs())),
+                                                  );
+                                                }
+                                                return child;
+                                              },
+                                          )))
+                                );
                             },
                           ),
                         ),
@@ -408,14 +386,14 @@ class DetailsBookScreen extends StatelessWidget {
   }
 
 
-  // Future<void> launchBaseUrl(context , String url) async {
-  //   final Uri baseUrl = Uri.parse(url);
-  //   if (await canLaunchUrl(baseUrl)) {
-  //   await launchUrl(baseUrl);
-  //   } else {
-  //   showFlutterToast(message: 'Error, Could not lunch this url', state: ToastStates.error, context: context);
-  //   }
-  //
-  // }
+  Future<void> launchBaseUrl(context , String url) async {
+    final Uri baseUrl = Uri.parse(url);
+    if (await canLaunchUrl(baseUrl)) {
+      await launchUrl(baseUrl, mode: LaunchMode.externalApplication);
+    } else {
+      showFlutterToast(message: 'Error, Could not lunch this url', state: ToastStates.error, context: context);
+    }
+
+  }
 
 }

@@ -1,4 +1,3 @@
-import 'package:bloc/bloc.dart';
 import 'package:ebook/models/bookModel/BookModel.dart';
 import 'package:ebook/shared/components/Components.dart';
 import 'package:ebook/shared/cubit/States.dart';
@@ -33,7 +32,7 @@ class AppCubit extends Cubit<AppStates> {
         print('$error in getting data books.');
       }
       showFlutterToast(
-          message: 'Error , data not fetched',
+          message: 'Error , data not fetched -> check you internet connection',
           state: ToastStates.error,
           context: context);
       emit(ErrorGetBooksAppState(error));
@@ -58,10 +57,6 @@ class AppCubit extends Cubit<AppStates> {
       if (kDebugMode) {
         print('$error in search book.');
       }
-      // showFlutterToast(
-      //     message: 'Error , something happen try again',
-      //     state: ToastStates.error,
-      //     context: context);
       emit(ErrorSearchBookAppState(error));
     });
   }
@@ -76,8 +71,8 @@ class AppCubit extends Cubit<AppStates> {
 
   void checkConnection(context) {
     InternetConnectionChecker().onStatusChange.listen((status) {
-      final hasInternet = status == InternetConnectionStatus.connected;
-      this.hasInternet = hasInternet;
+      final isConnected = status == InternetConnectionStatus.connected;
+      hasInternet = isConnected;
       (isSplashScreen == false) ? showSimpleNotification(
               (hasInternet)
                   ? const Text(
@@ -104,7 +99,6 @@ class AppCubit extends Cubit<AppStates> {
       }
       emit(CheckConnectionAppState());
     });
-    // emit(CheckConnectionAppState());
   }
 
   void changeStatusScreen() {

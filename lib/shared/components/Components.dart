@@ -1,3 +1,5 @@
+import 'package:ebook/shared/adaptive/CircularRingAdaptive.dart';
+import 'package:ebook/shared/components/Constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:hexcolor/hexcolor.dart';
@@ -72,18 +74,46 @@ Color chooseToastColor({
   required ToastStates s,
   context,
 }) {
-  Color? color;
-  switch (s) {
-    case ToastStates.success:
-      color = HexColor('009b9b');
-      break;
-    case ToastStates.error:
-      color = Colors.red;
-      break;
-    case ToastStates.warning:
-      color = Colors.amber;
-      break;
-  }
-  return color;
+  return switch (s) {
+    ToastStates.success => HexColor('009b9b'),
+    ToastStates.error => Colors.red,
+    ToastStates.warning => Colors.amber.shade900,
+  };
 }
 
+
+
+Widget errorBuilder({
+  required double width,
+  required double height,
+}) => Container(
+  height: height,
+  width: width,
+  decoration: BoxDecoration(
+    border: Border.all(
+      width: 0.5,
+      color: Colors.white,
+    ),
+    borderRadius: BorderRadius.circular(12.0),
+  ),
+  child: Image.asset('assets/images/mark.jpg',
+    fit: BoxFit.fill,
+    frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+      if(frame == null) {
+        Container(
+          height: height,
+          width: width,
+          decoration: BoxDecoration(
+            border: Border.all(
+              width: 0.5,
+              color: Colors.white,
+            ),
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          child: Center(child: CircularRingAdaptive(os: getOs())),
+        );
+      }
+      return child;
+    },
+  ),
+);

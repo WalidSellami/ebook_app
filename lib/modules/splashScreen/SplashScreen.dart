@@ -37,10 +37,10 @@ class _SplashScreenState extends State<SplashScreen> {
             child: Visibility(
               visible: isVisible,
               child: SvgPicture.asset(
-                'assets/images/EBOOK_logo.svg',
+                'assets/images/ebook.svg',
                 height: 250.0,
                 width: 250.0,
-                fit: BoxFit.fill,
+                fit: BoxFit.cover,
               ),
             ),
           ),
